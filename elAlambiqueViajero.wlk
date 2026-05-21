@@ -106,3 +106,88 @@ object moto{
     method desgaste() { }
     method patenteValida() = false
 }
+
+// ── NUEVOS VEHÍCULOS PARTE 2 ──────────────────────────────────────
+
+object antiguallaBlindata {
+  var gangsters = ["Al", "Scarface", "Lucky", "Bugsy", "Capone", "Dillinger", "Bonnie"]
+
+  method agregarGangster(nombre) { gangsters.add(nombre) }
+  method bajarGangster(nombre)   { gangsters.remove(nombre) }
+
+  // velocidad = cantidad de letras de todos los nombres juntos
+  method velocidad() = gangsters.sum({ g => g.size() })
+
+  method puedeFuncionar() = gangsters.size().even()
+  method rapido()         = gangsters.size() > 6
+  method desgaste()       { gangsters.remove(gangsters.last()) }
+  method patenteValida()  = gangsters.size() > 0
+  method tiempo()         = 1000 / self.velocidad()
+}
+
+object nodoyunaYPatan {
+  method puedeFuncionar() = true
+  method rapido()         = true
+  method patenteValida()  = true
+  method desgaste()       { }
+  // siempre llegan tarde por las trampas
+  method tiempo()         = 9999
+}
+
+object profesorLocovich {
+  var formas = [alambiqueVeloz, chatarra, antiguallaBlindata]
+  var indice = 0
+
+  method convertir() {
+    indice = (indice + 1) % formas.size()
+  }
+  method formaActual() = formas.get(indice)
+
+  method puedeFuncionar() = self.formaActual().puedeFuncionar()
+  method rapido()         = self.formaActual().rapido()
+  method patenteValida()  = self.formaActual().patenteValida()
+  method desgaste()       { self.formaActual().desgaste() }
+  method tiempo()         = self.formaActual().tiempo()
+}
+
+// ── CENTRO DE INSCRIPCIÓN ─────────────────────────────────────────
+
+object centroDeInscripcion {
+  var ciudad      = paris
+  var anotados    = []
+  var rechazados  = []
+
+  method ciudadCarrera(c) { ciudad = c }
+
+  method inscribir(vehiculo) {
+    if (ciudad.puedeLlegar(vehiculo))
+      anotados.add(vehiculo)
+    else
+      rechazados.add(vehiculo)
+  }
+
+  method replanificar(nuevaCiudad) {
+    ciudad = nuevaCiudad
+    // los anotados que ya no pueden → pasan a rechazados
+    const yaNopueden = anotados.filter({ v => !ciudad.puedeLlegar(v) })
+    yaNopueden.forEach({ v =>
+      anotados.remove(v)
+      rechazados.add(v)
+    })
+    // los rechazados que ahora pueden → pasan a anotados
+    const ahuedenAhora = rechazados.filter({ v => ciudad.puedeLlegar(v) })
+    ahuedenAhora.forEach({ v =>
+      rechazados.remove(v)
+      anotados.add(v)
+    })
+  }
+
+  method anotados()   = anotados
+  method rechazados() = rechazados
+
+  method realizarCarrera() {
+    anotados.forEach({ v => luke.viajar(ciudad) })  // sufren consecuencias
+    // el ganador es el que tarda menos
+    return anotados.min({ v => v.tiempo() })
+  }
+}

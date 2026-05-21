@@ -62,3 +62,42 @@ test "luke viaja a hurlingham en el convertible convertido en chatarra" {
   assert.equals(5,chatarra.cañones())
 
   }
+
+  // ── TESTS PARTE 2 ────────────────────────────────────────────────
+
+test "inscribir vehiculo que puede ir a paris lo agrega a anotados" {
+  centroDeInscripcion.ciudadCarrera(paris)
+  centroDeInscripcion.inscribir(alambiqueVeloz)
+  assert.that(centroDeInscripcion.anotados().contains(alambiqueVeloz))
+}
+
+test "inscribir vehiculo que no puede ir lo agrega a rechazados" {
+  centroDeInscripcion.ciudadCarrera(buenosAires)
+  centroDeInscripcion.inscribir(nodoyunaYPatan)
+  // nodoyunaYPatan es rapido() = true, deberia poder ir
+  assert.that(centroDeInscripcion.anotados().contains(nodoyunaYPatan))
+}
+
+test "replanificar mueve vehiculos entre anotados y rechazados" {
+  centroDeInscripcion.ciudadCarrera(paris)
+  centroDeInscripcion.inscribir(alambiqueVeloz)   // puede ir a paris
+  centroDeInscripcion.inscribir(antiguallaBlindata) // gangsters=7, rapido=true
+  centroDeInscripcion.replanificar(buenosAires)
+  // buenosAires requiere rapido() — antiguallaBlindata.rapido() = 7>6 = true
+  assert.that(centroDeInscripcion.anotados().contains(antiguallaBlindata))
+}
+
+test "antigualla blindada tiene velocidad igual a la suma de letras de los nombres" {
+  // Al(2) + Scarface(8) + Lucky(5) + Bugsy(5) + Capone(6) + Dillinger(8) + Bonnie(6) = 40
+  assert.equals(40, antiguallaBlindata.velocidad())
+}
+
+test "profesor locovich cambia de forma al convertir" {
+  const formaInicial = profesorLocovich.formaActual()
+  profesorLocovich.convertir()
+  assert.notEquals(formaInicial, profesorLocovich.formaActual())
+}
+
+test "nodoyuna y patan siempre pierden por sus trampas" {
+  assert.equals(9999, nodoyunaYPatan.tiempo())
+}
